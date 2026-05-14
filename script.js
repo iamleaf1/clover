@@ -240,15 +240,38 @@ loadAcceptanceLogos();
 const contactForm = document.getElementById("contact-form");
 const formStatus = document.getElementById("form-status");
 
-function setFormStatus(message, state = "") {
+function setFormStatus(message, state = "", asHtml = false) {
   if (!formStatus) {
     return;
   }
-  formStatus.textContent = message;
+  if (asHtml) {
+    formStatus.innerHTML = message;
+  } else {
+    formStatus.textContent = message;
+  }
   formStatus.classList.remove("success", "error");
   if (state) {
     formStatus.classList.add(state);
   }
+}
+
+function createFallbackMailto(formData) {
+  const name = (formData.get("name") || "").toString().trim();
+  const email = (formData.get("email") || "").toString().trim();
+  const studentYear = (formData.get("student-year") || "").toString().trim();
+  const goals = (formData.get("message") || "").toString().trim();
+  const bodyLines = [
+    "New Clover inquiry",
+    "",
+    `Name: ${name}`,
+    `Email: ${email}`,
+    `Student Year: ${studentYear}`,
+    "Goals:",
+    goals
+  ];
+  const subject = encodeURIComponent("New Clover Inquiry");
+  const body = encodeURIComponent(bodyLines.join("\n"));
+  return `mailto:cloverconsult26@gmail.com?subject=${subject}&body=${body}`;
 }
 
 if (contactForm) {
@@ -264,25 +287,33 @@ if (contactForm) {
     setFormStatus("Sending your inquiry...");
 
     const endpoint = contactForm.dataset.ajaxEndpoint || "";
-    const body = new FormData(contactForm);
+    const formData = new FormData(contactForm);
+    const payload = Object.fromEntries(formData);
 
     try {
       const response = await fetch(endpoint, {
         method: "POST",
-        body,
-        headers: { Accept: "application/json" }
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify(payload)
       });
 
-      if (!response.ok) {
-        throw new Error("Form service unavailable");
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok || result.success === false) {
+        throw new Error(result.message || "Form service unavailable");
       }
 
       contactForm.reset();
       setFormStatus("Thanks! Your inquiry was sent successfully.", "success");
     } catch (error) {
+      const fallbackMailto = createFallbackMailto(formData);
       setFormStatus(
-        "The form service is temporarily unavailable. Please email cloverconsult26@gmail.com directly.",
-        "error"
+        `Something went wrong sending your inquiry. <a href="${fallbackMailto}">Send this inquiry by email instead</a>.`,
+        "error",
+        true
       );
     } finally {
       if (submitButton) {

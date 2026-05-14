@@ -140,13 +140,14 @@
             <form
               id="contact-form"
               class="contact-form"
-              action="https://formsubmit.co/cloverconsult26@gmail.com"
+              action="https://api.web3forms.com/submit"
               method="post"
-              data-ajax-endpoint="https://formsubmit.co/ajax/cloverconsult26@gmail.com"
+              data-ajax-endpoint="https://api.web3forms.com/submit"
             >
-              <input type="hidden" name="_subject" value="New Clover Inquiry" />
-              <input type="hidden" name="_template" value="table" />
-              <input type="hidden" name="_captcha" value="false" />
+              <input type="hidden" name="access_key" value="4badcf59-1f01-4343-b602-374a181ee01b" />
+              <input type="hidden" name="subject" value="New Clover Inquiry" />
+              <input type="hidden" name="from_name" value="Clover Consulting Website" />
+              <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
               <label for="name">Name</label>
               <input id="name" name="name" type="text" placeholder="Your full name" required />
 

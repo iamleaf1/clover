@@ -316,6 +316,11 @@ textarea:focus {
   color: #ffb3b3;
 }
 
+.form-status a {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
 .site-footer {
   padding: 2.1rem 0 2.5rem;
   text-align: center;
