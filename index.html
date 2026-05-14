@@ -138,9 +138,11 @@
             <p>Let's talk about your goals and create a winning admissions roadmap.</p>
 
             <form
+              id="contact-form"
               class="contact-form"
               action="https://formsubmit.co/cloverconsult26@gmail.com"
               method="post"
+              data-ajax-endpoint="https://formsubmit.co/ajax/cloverconsult26@gmail.com"
             >
               <input type="hidden" name="_subject" value="New Clover Inquiry" />
               <input type="hidden" name="_template" value="table" />
@@ -170,6 +172,7 @@
               ></textarea>
 
               <button type="submit" class="btn btn-light">Submit</button>
+              <p id="form-status" class="form-status" aria-live="polite"></p>
             </form>
           </div>
         </div>

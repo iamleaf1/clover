@@ -236,3 +236,59 @@ async function loadAcceptanceLogos() {
 }
 
 loadAcceptanceLogos();
+
+const contactForm = document.getElementById("contact-form");
+const formStatus = document.getElementById("form-status");
+
+function setFormStatus(message, state = "") {
+  if (!formStatus) {
+    return;
+  }
+  formStatus.textContent = message;
+  formStatus.classList.remove("success", "error");
+  if (state) {
+    formStatus.classList.add(state);
+  }
+}
+
+if (contactForm) {
+  contactForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const submitButton = contactForm.querySelector('button[type="submit"]');
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Sending...";
+    }
+
+    setFormStatus("Sending your inquiry...");
+
+    const endpoint = contactForm.dataset.ajaxEndpoint || "";
+    const body = new FormData(contactForm);
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body,
+        headers: { Accept: "application/json" }
+      });
+
+      if (!response.ok) {
+        throw new Error("Form service unavailable");
+      }
+
+      contactForm.reset();
+      setFormStatus("Thanks! Your inquiry was sent successfully.", "success");
+    } catch (error) {
+      setFormStatus(
+        "The form service is temporarily unavailable. Please email cloverconsult26@gmail.com directly.",
+        "error"
+      );
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit";
+      }
+    }
+  });
+}

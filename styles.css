@@ -301,6 +301,21 @@ textarea:focus {
   width: fit-content;
 }
 
+.form-status {
+  margin: 0.2rem 0 0;
+  min-height: 1.3rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.form-status.success {
+  color: #8ef2a1;
+}
+
+.form-status.error {
+  color: #ffb3b3;
+}
+
 .site-footer {
   padding: 2.1rem 0 2.5rem;
   text-align: center;
