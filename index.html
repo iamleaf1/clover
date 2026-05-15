@@ -146,6 +146,24 @@
                     </p>
                     <p class="package-cta">Submit your essays &rarr;</p>
                   </button>
+                  <button type="button" class="package-card" data-package="common-app-activities">
+                    <h3>Common App Activity List</h3>
+                    <p>Up to 10 activities (150 char descriptions)</p>
+                    <p class="price" data-pricing="common-app-activities">
+                      <span class="price-main">First essay free</span>
+                      <span class="price-sub">then $50</span>
+                    </p>
+                    <p class="package-cta">Submit your list &rarr;</p>
+                  </button>
+                  <button type="button" class="package-card" data-package="uc-activities">
+                    <h3>UC Activity List</h3>
+                    <p>Up to 20 activities &amp; awards (500 char each)</p>
+                    <p class="price" data-pricing="uc-activities">
+                      <span class="price-main">First essay free</span>
+                      <span class="price-sub">then $75</span>
+                    </p>
+                    <p class="package-cta">Submit your list &rarr;</p>
+                  </button>
                 </div>
 
                 <div id="essay-form-wrap" class="package-form" hidden>
@@ -299,6 +317,64 @@
                       <button type="submit" class="btn btn-light">Submit Essays</button>
                     </div>
                     <p id="uc-status" class="form-status" aria-live="polite"></p>
+                  </form>
+                </div>
+
+                <div id="ca-act-form-wrap" class="package-form" hidden>
+                  <h3>Submit your Common App Activity List</h3>
+                  <p>Add up to 10 activities. Each description is limited to 150 characters (Common App limit). We&apos;ll review within 48 hours.</p>
+                  <form id="ca-act-form" novalidate>
+                    <input type="hidden" name="access_key" value="4badcf59-1f01-4343-b602-374a181ee01b" />
+                    <input type="hidden" name="subject" value="New Common App Activity List Submission" />
+                    <input type="hidden" name="from_name" value="Clover Activity List Submission" />
+                    <input type="checkbox" name="ca_act_botcheck" style="display:none" tabindex="-1" autocomplete="off" />
+
+                    <div class="auth-fillable">
+                      <label for="ca-act-name">Name</label>
+                      <input id="ca-act-name" name="name" type="text" data-autofill="name" placeholder="Your full name" required />
+                    </div>
+                    <div class="auth-fillable">
+                      <label for="ca-act-email">Email</label>
+                      <input id="ca-act-email" name="email" type="email" data-autofill="email" placeholder="you@example.com" required />
+                    </div>
+
+                    <div id="ca-act-list" class="activity-list"></div>
+                    <button type="button" class="btn btn-ghost" id="ca-act-add">+ Add another activity</button>
+
+                    <div class="essay-actions">
+                      <button type="button" class="btn btn-ghost" id="ca-act-cancel">Cancel</button>
+                      <button type="submit" class="btn btn-light">Submit Activities</button>
+                    </div>
+                    <p id="ca-act-status" class="form-status" aria-live="polite"></p>
+                  </form>
+                </div>
+
+                <div id="uc-act-form-wrap" class="package-form" hidden>
+                  <h3>Submit your UC Activity List</h3>
+                  <p>Add up to 20 activities or awards across all categories. Each description is limited to 500 characters (UC limit). We&apos;ll review within 48 hours.</p>
+                  <form id="uc-act-form" novalidate>
+                    <input type="hidden" name="access_key" value="4badcf59-1f01-4343-b602-374a181ee01b" />
+                    <input type="hidden" name="subject" value="New UC Activity List Submission" />
+                    <input type="hidden" name="from_name" value="Clover Activity List Submission" />
+                    <input type="checkbox" name="uc_act_botcheck" style="display:none" tabindex="-1" autocomplete="off" />
+
+                    <div class="auth-fillable">
+                      <label for="uc-act-name">Name</label>
+                      <input id="uc-act-name" name="name" type="text" data-autofill="name" placeholder="Your full name" required />
+                    </div>
+                    <div class="auth-fillable">
+                      <label for="uc-act-email">Email</label>
+                      <input id="uc-act-email" name="email" type="email" data-autofill="email" placeholder="you@example.com" required />
+                    </div>
+
+                    <div id="uc-act-list" class="activity-list"></div>
+                    <button type="button" class="btn btn-ghost" id="uc-act-add">+ Add another activity</button>
+
+                    <div class="essay-actions">
+                      <button type="button" class="btn btn-ghost" id="uc-act-cancel">Cancel</button>
+                      <button type="submit" class="btn btn-light">Submit Activities</button>
+                    </div>
+                    <p id="uc-act-status" class="form-status" aria-live="polite"></p>
                   </form>
                 </div>
               </div>

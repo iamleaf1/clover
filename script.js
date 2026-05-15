@@ -358,7 +358,7 @@ const ESSAY_DOC_ENDPOINT = "https://script.google.com/macros/s/AKfycbydZuChid8Bt
 const ucFormWrap = document.getElementById("uc-form-wrap");
 
 function showPackageForm(targetWrap, focusId) {
-  [essayFormWrap, ucFormWrap].forEach((w) => {
+  [essayFormWrap, ucFormWrap, document.getElementById("ca-act-form-wrap"), document.getElementById("uc-act-form-wrap")].forEach((w) => {
     if (w) w.hidden = w !== targetWrap;
   });
   if (targetWrap) {
@@ -385,12 +385,25 @@ function requireAuthThen(callback) {
   }
 }
 
+const caActFormWrap = document.getElementById("ca-act-form-wrap");
+const ucActFormWrap = document.getElementById("uc-act-form-wrap");
+
 function handlePackageClick(card) {
   const pkg = card.dataset.package;
   if (pkg === "personal-statement" && essayFormWrap) {
     requireAuthThen(() => showPackageForm(essayFormWrap, "essay-prompt"));
   } else if (pkg === "uc-essays" && ucFormWrap) {
     requireAuthThen(() => showPackageForm(ucFormWrap, "uc-prompt-1"));
+  } else if (pkg === "common-app-activities" && caActFormWrap) {
+    requireAuthThen(() => {
+      ensureMinimumActivities(caActConfig);
+      showPackageForm(caActFormWrap, null);
+    });
+  } else if (pkg === "uc-activities" && ucActFormWrap) {
+    requireAuthThen(() => {
+      ensureMinimumActivities(ucActConfig);
+      showPackageForm(ucActFormWrap, null);
+    });
   } else {
     const contactSection = document.getElementById("contact");
     if (contactSection) contactSection.scrollIntoView({ behavior: "smooth" });
@@ -453,6 +466,14 @@ const PRICING_TIERS = {
   "uc-essays": {
     free: { main: "First essay free", sub: "then $180 for all 4" },
     paid: { main: "$180", sub: "all 4 essays" }
+  },
+  "common-app-activities": {
+    free: { main: "First essay free", sub: "then $50" },
+    paid: { main: "$50", sub: "activity list review" }
+  },
+  "uc-activities": {
+    free: { main: "First essay free", sub: "then $75" },
+    paid: { main: "$75", sub: "activity list review" }
   }
 };
 
@@ -804,3 +825,313 @@ if (ucForm) {
     }
   });
 }
+
+const caActConfig = {
+  id: "ca-act",
+  packageName: "Common App Activities",
+  subject: "New Common App Activity List Submission",
+  maxActivities: 10,
+  titleMax: 100,
+  descriptionMax: 150,
+  titlePlaceholder: "Organization or activity name",
+  descPlaceholder: "Describe your role, impact, and contributions...",
+  listId: "ca-act-list",
+  formId: "ca-act-form",
+  wrapId: "ca-act-form-wrap",
+  addBtnId: "ca-act-add",
+  cancelBtnId: "ca-act-cancel",
+  statusId: "ca-act-status"
+};
+
+const ucActConfig = {
+  id: "uc-act",
+  packageName: "UC Activities",
+  subject: "New UC Activity List Submission",
+  maxActivities: 20,
+  titleMax: 60,
+  descriptionMax: 500,
+  titlePlaceholder: "Award, activity, or experience title",
+  descPlaceholder: "Describe what you did, your role, and impact...",
+  listId: "uc-act-list",
+  formId: "uc-act-form",
+  wrapId: "uc-act-form-wrap",
+  addBtnId: "uc-act-add",
+  cancelBtnId: "uc-act-cancel",
+  statusId: "uc-act-status"
+};
+
+function updateActivityLegends(config) {
+  const list = document.getElementById(config.listId);
+  if (!list) return;
+  const blocks = list.querySelectorAll(".activity-block");
+  blocks.forEach((block, i) => {
+    const legend = block.querySelector("legend");
+    if (legend) legend.textContent = `Activity ${i + 1}`;
+  });
+  const addBtn = document.getElementById(config.addBtnId);
+  if (addBtn) addBtn.hidden = blocks.length >= config.maxActivities;
+}
+
+function updateCharCounter(textarea, counter, limit) {
+  const n = textarea.value.length;
+  counter.textContent = `${n} / ${limit}`;
+  counter.classList.toggle("over", n > limit);
+}
+
+function createActivityBlock(config) {
+  const list = document.getElementById(config.listId);
+  if (!list) return null;
+  const fieldset = document.createElement("fieldset");
+  fieldset.className = "activity-block";
+
+  const legend = document.createElement("legend");
+  legend.textContent = "Activity";
+  fieldset.appendChild(legend);
+
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "activity-remove";
+  removeBtn.setAttribute("aria-label", "Remove this activity");
+  removeBtn.textContent = "\u00D7";
+  removeBtn.addEventListener("click", () => {
+    const blocks = list.querySelectorAll(".activity-block");
+    if (blocks.length <= 1) {
+      const ta = fieldset.querySelector("textarea");
+      const titleInput = fieldset.querySelector('input[type="text"]');
+      if (ta) ta.value = "";
+      if (titleInput) titleInput.value = "";
+      const counter = fieldset.querySelector(".char-counter");
+      if (counter && ta) updateCharCounter(ta, counter, config.descriptionMax);
+      return;
+    }
+    fieldset.remove();
+    updateActivityLegends(config);
+  });
+  fieldset.appendChild(removeBtn);
+
+  const titleLabel = document.createElement("label");
+  titleLabel.textContent = "Activity Name";
+  fieldset.appendChild(titleLabel);
+
+  const titleInput = document.createElement("input");
+  titleInput.type = "text";
+  titleInput.className = "activity-title";
+  titleInput.maxLength = config.titleMax;
+  titleInput.placeholder = config.titlePlaceholder;
+  fieldset.appendChild(titleInput);
+
+  const descLabel = document.createElement("label");
+  descLabel.textContent = "Description ";
+  const counter = document.createElement("span");
+  counter.className = "char-counter";
+  counter.textContent = `0 / ${config.descriptionMax}`;
+  descLabel.appendChild(counter);
+  fieldset.appendChild(descLabel);
+
+  const desc = document.createElement("textarea");
+  desc.className = "activity-description";
+  desc.rows = 3;
+  desc.maxLength = config.descriptionMax;
+  desc.placeholder = config.descPlaceholder;
+  desc.addEventListener("input", () => updateCharCounter(desc, counter, config.descriptionMax));
+  fieldset.appendChild(desc);
+
+  list.appendChild(fieldset);
+  updateActivityLegends(config);
+  return fieldset;
+}
+
+function ensureMinimumActivities(config) {
+  const list = document.getElementById(config.listId);
+  if (!list) return;
+  if (list.querySelectorAll(".activity-block").length === 0) {
+    createActivityBlock(config);
+  }
+}
+
+function readActivities(config) {
+  const list = document.getElementById(config.listId);
+  if (!list) return [];
+  const blocks = list.querySelectorAll(".activity-block");
+  const out = [];
+  blocks.forEach((block) => {
+    const title = (block.querySelector(".activity-title")?.value || "").trim();
+    const description = (block.querySelector(".activity-description")?.value || "").trim();
+    if (!title && !description) return;
+    out.push({
+      title,
+      description,
+      characterCount: description.length
+    });
+  });
+  return out;
+}
+
+function clearActivities(config) {
+  const list = document.getElementById(config.listId);
+  if (!list) return;
+  list.innerHTML = "";
+  createActivityBlock(config);
+}
+
+function setActivityStatus(config, message, state = "", asHtml = false) {
+  const status = document.getElementById(config.statusId);
+  if (!status) return;
+  if (asHtml) {
+    status.innerHTML = message;
+  } else {
+    status.textContent = message;
+  }
+  status.classList.remove("success", "error");
+  if (state) status.classList.add(state);
+}
+
+function wireActivityForm(config) {
+  ensureMinimumActivities(config);
+
+  const addBtn = document.getElementById(config.addBtnId);
+  if (addBtn) {
+    addBtn.addEventListener("click", () => {
+      const list = document.getElementById(config.listId);
+      if (!list) return;
+      if (list.querySelectorAll(".activity-block").length >= config.maxActivities) return;
+      const block = createActivityBlock(config);
+      if (block) block.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
+
+  const cancelBtn = document.getElementById(config.cancelBtnId);
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      const form = document.getElementById(config.formId);
+      if (form) form.reset();
+      clearActivities(config);
+      setActivityStatus(config, "");
+      const wrap = document.getElementById(config.wrapId);
+      if (wrap) wrap.hidden = true;
+    });
+  }
+
+  const form = document.getElementById(config.formId);
+  if (!form) return;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!window.cloverAuth?.user) {
+      setActivityStatus(config, "Please sign in with Google before submitting.", "error");
+      return;
+    }
+
+    const activities = readActivities(config);
+    if (activities.length === 0) {
+      setActivityStatus(config, "Please add at least one activity with a description.", "error");
+      return;
+    }
+
+    const overLimit = activities.find((a) => a.characterCount > config.descriptionMax);
+    if (overLimit) {
+      setActivityStatus(
+        config,
+        `One of your descriptions exceeds the ${config.descriptionMax}-character limit.`,
+        "error"
+      );
+      return;
+    }
+
+    const submitButton = form.querySelector('button[type="submit"]');
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Submitting...";
+    }
+    setActivityStatus(config, "Submitting your activity list...");
+
+    const idToken = await getCurrentIdToken();
+    const formData = new FormData(form);
+    const concatenated = activities
+      .map((a, i) =>
+        `=== Activity ${i + 1} ===\n` +
+        (a.title ? `Title: ${a.title}\n` : "") +
+        `Characters: ${a.characterCount}\n\n` +
+        a.description
+      )
+      .join("\n\n");
+    const totalChars = activities.reduce((sum, a) => sum + a.characterCount, 0);
+
+    let docUrl = "";
+    if (ESSAY_DOC_ENDPOINT && idToken) {
+      try {
+        const docRes = await fetch(ESSAY_DOC_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            idToken,
+            package: config.packageName,
+            activities,
+            prompt: `${config.packageName} (${activities.length} entries)`,
+            wordCount: totalChars,
+            essay: concatenated
+          })
+        });
+        const docData = await docRes.json().catch(() => ({}));
+        if (docData && docData.url) {
+          docUrl = docData.url;
+        }
+        if (typeof docData.submissionCount === "number") {
+          applyPricingForSubmissionCount(docData.submissionCount);
+        }
+      } catch (e) {
+      }
+    }
+
+    const w3Payload = {
+      access_key: formData.get("access_key"),
+      subject: config.subject,
+      from_name: "Clover Activity List Submission",
+      name: formData.get("name"),
+      email: formData.get("email"),
+      package: config.packageName,
+      activity_count: activities.length,
+      total_chars: totalChars,
+      doc_url: docUrl || "(Google Doc auto-creation not configured)",
+      activities: concatenated
+    };
+
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify(w3Payload)
+      });
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || result.success === false) {
+        throw new Error(result.message || "Submit failed");
+      }
+
+      form.reset();
+      clearActivities(config);
+
+      const successMsg = docUrl
+        ? `Thanks! Your activity list was submitted. <a href="${docUrl}" target="_blank" rel="noopener">View as a Google Doc</a>. We'll be in touch within 48 hours.`
+        : "Thanks! Your activity list was submitted successfully. We'll be in touch within 48 hours.";
+      setActivityStatus(config, successMsg, "success", !!docUrl);
+    } catch (error) {
+      setActivityStatus(
+        config,
+        "Something went wrong submitting your activity list. Please try again or email cloverconsult26@gmail.com directly.",
+        "error"
+      );
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit Activities";
+      }
+    }
+  });
+}
+
+wireActivityForm(caActConfig);
+wireActivityForm(ucActConfig);
