@@ -352,6 +352,7 @@ const essayText = document.getElementById("essay-text");
 const essayCounter = document.getElementById("essay-word-counter");
 const essayStatus = document.getElementById("essay-status");
 const ESSAY_LIMIT = 650;
+const ESSAY_HARD_LIMIT = ESSAY_LIMIT + 75;
 
 const ESSAY_DOC_ENDPOINT = "https://script.google.com/macros/s/AKfycbydZuChid8Bt9ZO4efBAP2MC6UjpU1QjtrzCVduSnr56E3KtU6lheuirffjtlolOreeVg/exec";
 
@@ -551,9 +552,9 @@ if (essayForm) {
       setEssayStatus("Please paste your essay before submitting.", "error");
       return;
     }
-    if (wordCount > ESSAY_LIMIT) {
+    if (wordCount > ESSAY_HARD_LIMIT) {
       setEssayStatus(
-        `Your essay is ${wordCount} words. Please trim to ${ESSAY_LIMIT} words or fewer (Common App limit).`,
+        `Your essay is ${wordCount} words. The maximum we can review is ${ESSAY_HARD_LIMIT} words (${ESSAY_LIMIT} Common App limit + 75 trim buffer).`,
         "error"
       );
       return;
@@ -833,6 +834,7 @@ const caActConfig = {
   maxActivities: 10,
   titleMax: 100,
   descriptionMax: 150,
+  descriptionHardMax: 225,
   titlePlaceholder: "Organization or activity name",
   descPlaceholder: "Describe your role, impact, and contributions...",
   listId: "ca-act-list",
@@ -849,7 +851,8 @@ const ucActConfig = {
   subject: "New UC Activity List Submission",
   maxActivities: 20,
   titleMax: 60,
-  descriptionMax: 500,
+  descriptionMax: 350,
+  descriptionHardMax: 425,
   titlePlaceholder: "Award, activity, or experience title",
   descPlaceholder: "Describe what you did, your role, and impact...",
   listId: "uc-act-list",
@@ -931,7 +934,7 @@ function createActivityBlock(config) {
   const desc = document.createElement("textarea");
   desc.className = "activity-description";
   desc.rows = 3;
-  desc.maxLength = config.descriptionMax;
+  desc.maxLength = config.descriptionHardMax || config.descriptionMax;
   desc.placeholder = config.descPlaceholder;
   desc.addEventListener("input", () => updateCharCounter(desc, counter, config.descriptionMax));
   fieldset.appendChild(desc);
@@ -1029,11 +1032,12 @@ function wireActivityForm(config) {
       return;
     }
 
-    const overLimit = activities.find((a) => a.characterCount > config.descriptionMax);
-    if (overLimit) {
+    const hardMax = config.descriptionHardMax || config.descriptionMax;
+    const overHard = activities.find((a) => a.characterCount > hardMax);
+    if (overHard) {
       setActivityStatus(
         config,
-        `One of your descriptions exceeds the ${config.descriptionMax}-character limit.`,
+        `One of your descriptions exceeds the ${hardMax}-character maximum (${config.descriptionMax} + 75 trim buffer).`,
         "error"
       );
       return;
