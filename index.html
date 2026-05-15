@@ -16,7 +16,7 @@
     />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="auth-pending">
     <header class="site-header">
       <div class="container nav-wrap">
         <a href="#top" class="brand" aria-label="Clover home">
@@ -27,7 +27,18 @@
           <a href="#about">About</a>
           <a href="#services">Services &amp; Pricing</a>
         </nav>
-        <a href="#contact" class="btn btn-light">Free Consultation</a>
+        <div class="header-actions">
+          <a href="#contact" class="header-link">Free Consultation</a>
+          <button id="auth-signin-btn" type="button" class="btn btn-google" hidden>
+            <span class="google-g" aria-hidden="true">G</span>
+            <span>Sign in</span>
+          </button>
+          <div id="user-badge" class="user-badge" hidden>
+            <img id="user-badge-avatar" alt="" referrerpolicy="no-referrer" hidden />
+            <span id="user-badge-name"></span>
+            <button id="auth-signout-btn" type="button" class="user-badge-signout">Sign out</button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -140,11 +151,14 @@
                     <input type="hidden" name="from_name" value="Clover Essay Submission" />
                     <input type="checkbox" name="essay_botcheck" style="display:none" tabindex="-1" autocomplete="off" />
 
-                    <label for="essay-name">Name</label>
-                    <input id="essay-name" name="name" type="text" placeholder="Your full name" required />
-
-                    <label for="essay-email">Email</label>
-                    <input id="essay-email" name="email" type="email" placeholder="you@example.com" required />
+                    <div class="auth-fillable">
+                      <label for="essay-name">Name</label>
+                      <input id="essay-name" name="name" type="text" data-autofill="name" placeholder="Your full name" required />
+                    </div>
+                    <div class="auth-fillable">
+                      <label for="essay-email">Email</label>
+                      <input id="essay-email" name="email" type="email" data-autofill="email" placeholder="you@example.com" required />
+                    </div>
 
                     <label for="essay-prompt">Common App Prompt</label>
                     <select id="essay-prompt" name="prompt" required>
@@ -181,11 +195,14 @@
                     <input type="hidden" name="from_name" value="Clover Essay Submission" />
                     <input type="checkbox" name="uc_botcheck" style="display:none" tabindex="-1" autocomplete="off" />
 
-                    <label for="uc-name">Name</label>
-                    <input id="uc-name" name="name" type="text" placeholder="Your full name" required />
-
-                    <label for="uc-email">Email</label>
-                    <input id="uc-email" name="email" type="email" placeholder="you@example.com" required />
+                    <div class="auth-fillable">
+                      <label for="uc-name">Name</label>
+                      <input id="uc-name" name="name" type="text" data-autofill="name" placeholder="Your full name" required />
+                    </div>
+                    <div class="auth-fillable">
+                      <label for="uc-email">Email</label>
+                      <input id="uc-email" name="email" type="email" data-autofill="email" placeholder="you@example.com" required />
+                    </div>
 
                     <fieldset class="uc-essay-block">
                       <legend>Essay 1</legend>
@@ -338,11 +355,14 @@
               <input type="hidden" name="subject" value="New Clover Inquiry" />
               <input type="hidden" name="from_name" value="Clover Consulting Website" />
               <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off" />
-              <label for="name">Name</label>
-              <input id="name" name="name" type="text" placeholder="Your full name" required />
-
-              <label for="email">Email</label>
-              <input id="email" name="email" type="email" placeholder="you@example.com" required />
+              <div class="auth-fillable">
+                <label for="name">Name</label>
+                <input id="name" name="name" type="text" data-autofill="name" placeholder="Your full name" required />
+              </div>
+              <div class="auth-fillable">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" data-autofill="email" placeholder="you@example.com" required />
+              </div>
 
               <label for="student-year">Student Year</label>
               <select id="student-year" name="student-year" required>
@@ -377,5 +397,6 @@
     </footer>
 
     <script src="script.js"></script>
+    <script type="module" src="auth.js"></script>
   </body>
 </html>

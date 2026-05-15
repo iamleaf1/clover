@@ -370,14 +370,29 @@ function showPackageForm(targetWrap, focusId) {
   }
 }
 
+function requireAuthThen(callback) {
+  const auth = window.cloverAuth;
+  if (auth && auth.user) {
+    callback();
+    return;
+  }
+  if (auth && typeof auth.signIn === "function") {
+    auth.signIn().then((user) => {
+      if (user) callback();
+    });
+  } else {
+    alert("Account system is loading. Please try again in a moment.");
+  }
+}
+
 const packageCards = document.querySelectorAll(".package-card[data-package]");
 packageCards.forEach((card) => {
   card.addEventListener("click", () => {
     const pkg = card.dataset.package;
     if (pkg === "personal-statement" && essayFormWrap) {
-      showPackageForm(essayFormWrap, "essay-name");
+      requireAuthThen(() => showPackageForm(essayFormWrap, "essay-prompt"));
     } else if (pkg === "uc-essays" && ucFormWrap) {
-      showPackageForm(ucFormWrap, "uc-name");
+      requireAuthThen(() => showPackageForm(ucFormWrap, "uc-prompt-1"));
     } else {
       const contactSection = document.getElementById("contact");
       if (contactSection) contactSection.scrollIntoView({ behavior: "smooth" });
@@ -410,6 +425,13 @@ if (essayText) {
   updateEssayWordCount();
 }
 
+async function getCurrentIdToken() {
+  if (window.cloverAuth && typeof window.cloverAuth.getIdToken === "function") {
+    return await window.cloverAuth.getIdToken();
+  }
+  return null;
+}
+
 function setEssayStatus(message, state = "", asHtml = false) {
   if (!essayStatus) return;
   if (asHtml) {
@@ -430,6 +452,10 @@ if (essayForm) {
     const essayContent = (formData.get("essay") || "").toString();
     const wordCount = countWords(essayContent);
 
+    if (!window.cloverAuth?.user) {
+      setEssayStatus("Please sign in with Google before submitting.", "error");
+      return;
+    }
     if (wordCount === 0) {
       setEssayStatus("Please paste your essay before submitting.", "error");
       return;
@@ -450,17 +476,17 @@ if (essayForm) {
 
     const promptValue = (formData.get("prompt") || "").toString();
     const promptLabel = essayForm.querySelector(`#essay-prompt option[value="${promptValue}"]`)?.textContent || promptValue;
+    const idToken = await getCurrentIdToken();
 
     let docUrl = "";
 
-    if (ESSAY_DOC_ENDPOINT) {
+    if (ESSAY_DOC_ENDPOINT && idToken) {
       try {
         const docRes = await fetch(ESSAY_DOC_ENDPOINT, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
-            name: formData.get("name"),
-            email: formData.get("email"),
+            idToken,
             prompt: promptLabel,
             wordCount,
             essay: essayContent,
@@ -580,6 +606,11 @@ if (ucForm) {
   ucForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    if (!window.cloverAuth?.user) {
+      setUcStatus("Please sign in with Google before submitting.", "error");
+      return;
+    }
+
     const submitButton = ucForm.querySelector('button[type="submit"]');
     const formData = new FormData(ucForm);
 
@@ -626,15 +657,16 @@ if (ucForm) {
       .join("\n");
     const totalWords = essays.reduce((sum, e) => sum + e.wordCount, 0);
 
+    const idToken = await getCurrentIdToken();
+
     let docUrl = "";
-    if (ESSAY_DOC_ENDPOINT) {
+    if (ESSAY_DOC_ENDPOINT && idToken) {
       try {
         const docRes = await fetch(ESSAY_DOC_ENDPOINT, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({
-            name: formData.get("name"),
-            email: formData.get("email"),
+            idToken,
             package: "UC Essays",
             essays,
             prompt: "UC PIQs (4 essays)",

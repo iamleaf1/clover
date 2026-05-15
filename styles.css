@@ -104,6 +104,109 @@ body {
   color: var(--btn-text);
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.header-link {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.header-link:hover {
+  color: var(--text);
+}
+
+.btn-google {
+  background-color: #ffffff;
+  color: #1f1f1f;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.92rem;
+  border: 1px solid #dadce0;
+  transition: box-shadow 120ms ease, transform 120ms ease;
+}
+
+.btn-google:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+.google-g {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: conic-gradient(from -45deg, #4285f4 0 25%, #34a853 0 50%, #fbbc05 0 75%, #ea4335 0);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 11px;
+  font-family: "Product Sans", Arial, sans-serif;
+  line-height: 1;
+}
+
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.55rem 0.35rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.user-badge img {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-badge span {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 0.9rem;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-badge-signout {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 0.1rem 0.5rem;
+  border-left: 1px solid var(--line);
+}
+
+.user-badge-signout:hover {
+  color: var(--text);
+}
+
+body.logged-in .auth-fillable {
+  display: none;
+}
+
+body.auth-pending #auth-signin-btn,
+body.auth-pending #user-badge {
+  visibility: hidden;
+}
+
 .hero {
   padding: 1.8rem 0 0;
 }
@@ -516,6 +619,14 @@ textarea:focus {
 @media (max-width: 900px) {
   .nav-links {
     display: none;
+  }
+
+  .header-link {
+    display: none;
+  }
+
+  .user-badge span {
+    max-width: 90px;
   }
 
   .hero-card {
