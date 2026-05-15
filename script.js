@@ -385,22 +385,32 @@ function requireAuthThen(callback) {
   }
 }
 
+function handlePackageClick(card) {
+  const pkg = card.dataset.package;
+  if (pkg === "personal-statement" && essayFormWrap) {
+    requireAuthThen(() => showPackageForm(essayFormWrap, "essay-prompt"));
+  } else if (pkg === "uc-essays" && ucFormWrap) {
+    requireAuthThen(() => showPackageForm(ucFormWrap, "uc-prompt-1"));
+  } else {
+    const contactSection = document.getElementById("contact");
+    if (contactSection) contactSection.scrollIntoView({ behavior: "smooth" });
+  }
+}
+
 const packageCards = document.querySelectorAll(".package-card[data-package]");
 packageCards.forEach((card) => {
-  card.addEventListener("click", () => {
-    const pkg = card.dataset.package;
-    if (pkg === "personal-statement" && essayFormWrap) {
-      requireAuthThen(() => showPackageForm(essayFormWrap, "essay-prompt"));
-    } else if (pkg === "uc-essays" && ucFormWrap) {
-      requireAuthThen(() => showPackageForm(ucFormWrap, "uc-prompt-1"));
-    } else if (pkg === "free-consultation") {
-      const contactSection = document.getElementById("contact");
-      if (contactSection) contactSection.scrollIntoView({ behavior: "smooth" });
-    } else {
-      const contactSection = document.getElementById("contact");
-      if (contactSection) contactSection.scrollIntoView({ behavior: "smooth" });
-    }
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("a")) return;
+    handlePackageClick(card);
   });
+  if (card.getAttribute("role") === "button") {
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        handlePackageClick(card);
+      }
+    });
+  }
 });
 
 if (essayCancel && essayForm) {

@@ -513,6 +513,13 @@ h2 {
   color: #d7dcea;
   font-weight: 600;
   font-size: 0.95rem;
+  text-decoration: none;
+  transition: color 120ms ease, transform 120ms ease;
+}
+
+.package-instagram:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
 .instagram-glyph {
