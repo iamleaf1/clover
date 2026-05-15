@@ -542,16 +542,12 @@ h2 {
 }
 
 .instagram-glyph {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: 22px;
   height: 22px;
   border-radius: 6px;
-  background: linear-gradient(135deg, #f58529 0%, #dd2a7b 50%, #8134af 100%);
-  color: #ffffff;
-  font-weight: 700;
-  font-size: 12px;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .package-form {
