@@ -3,7 +3,8 @@ const words = [
   "tell your story.",
   "feel confident.",
   "navigate the journey.",
-  "get where you belong."
+  "get where you belong.",
+  "get admitted."
 ];
 
 const typingTarget = document.getElementById("typing-text");
@@ -320,6 +321,189 @@ if (contactForm) {
       if (submitButton) {
         submitButton.disabled = false;
         submitButton.textContent = "Submit";
+      }
+    }
+  });
+}
+
+const tabButtons = document.querySelectorAll(".tab");
+const tabPanels = document.querySelectorAll(".tab-panel");
+
+tabButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.tab;
+    tabButtons.forEach((b) => {
+      const active = b === btn;
+      b.classList.toggle("active", active);
+      b.setAttribute("aria-selected", String(active));
+    });
+    tabPanels.forEach((panel) => {
+      const show = panel.dataset.panel === target;
+      panel.classList.toggle("active", show);
+      panel.hidden = !show;
+    });
+  });
+});
+
+const essayFormWrap = document.getElementById("essay-form-wrap");
+const essayForm = document.getElementById("essay-form");
+const essayCancel = document.getElementById("essay-cancel");
+const essayText = document.getElementById("essay-text");
+const essayCounter = document.getElementById("essay-word-counter");
+const essayStatus = document.getElementById("essay-status");
+const ESSAY_LIMIT = 650;
+
+const ESSAY_DOC_ENDPOINT = "https://script.google.com/macros/s/AKfycbydZuChid8Bt9ZO4efBAP2MC6UjpU1QjtrzCVduSnr56E3KtU6lheuirffjtlolOreeVg/exec";
+
+const packageCards = document.querySelectorAll(".package-card[data-package]");
+packageCards.forEach((card) => {
+  card.addEventListener("click", () => {
+    const pkg = card.dataset.package;
+    if (pkg === "personal-statement" && essayFormWrap) {
+      essayFormWrap.hidden = false;
+      essayFormWrap.scrollIntoView({ behavior: "smooth", block: "start" });
+      const nameInput = document.getElementById("essay-name");
+      if (nameInput) nameInput.focus();
+    } else {
+      const contactSection = document.getElementById("contact");
+      if (contactSection) contactSection.scrollIntoView({ behavior: "smooth" });
+    }
+  });
+});
+
+if (essayCancel && essayForm) {
+  essayCancel.addEventListener("click", () => {
+    essayForm.reset();
+    updateEssayWordCount();
+    setEssayStatus("");
+    if (essayFormWrap) essayFormWrap.hidden = true;
+  });
+}
+
+function countWords(text) {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function updateEssayWordCount() {
+  if (!essayText || !essayCounter) return;
+  const n = countWords(essayText.value);
+  essayCounter.textContent = `${n} / ${ESSAY_LIMIT} words`;
+  essayCounter.classList.toggle("over", n > ESSAY_LIMIT);
+}
+
+if (essayText) {
+  essayText.addEventListener("input", updateEssayWordCount);
+  updateEssayWordCount();
+}
+
+function setEssayStatus(message, state = "", asHtml = false) {
+  if (!essayStatus) return;
+  if (asHtml) {
+    essayStatus.innerHTML = message;
+  } else {
+    essayStatus.textContent = message;
+  }
+  essayStatus.classList.remove("success", "error");
+  if (state) essayStatus.classList.add(state);
+}
+
+if (essayForm) {
+  essayForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const submitButton = essayForm.querySelector('button[type="submit"]');
+    const formData = new FormData(essayForm);
+    const essayContent = (formData.get("essay") || "").toString();
+    const wordCount = countWords(essayContent);
+
+    if (wordCount === 0) {
+      setEssayStatus("Please paste your essay before submitting.", "error");
+      return;
+    }
+    if (wordCount > ESSAY_LIMIT) {
+      setEssayStatus(
+        `Your essay is ${wordCount} words. Please trim to ${ESSAY_LIMIT} words or fewer (Common App limit).`,
+        "error"
+      );
+      return;
+    }
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Submitting...";
+    }
+    setEssayStatus("Submitting your essay...");
+
+    const promptValue = (formData.get("prompt") || "").toString();
+    const promptLabel = essayForm.querySelector(`#essay-prompt option[value="${promptValue}"]`)?.textContent || promptValue;
+
+    let docUrl = "";
+
+    if (ESSAY_DOC_ENDPOINT) {
+      try {
+        const docRes = await fetch(ESSAY_DOC_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            name: formData.get("name"),
+            email: formData.get("email"),
+            prompt: promptLabel,
+            wordCount,
+            essay: essayContent,
+            package: "Personal Statement"
+          })
+        });
+        const docData = await docRes.json().catch(() => ({}));
+        if (docData && docData.url) {
+          docUrl = docData.url;
+        }
+      } catch (e) {
+      }
+    }
+
+    const w3Payload = {
+      access_key: formData.get("access_key"),
+      subject: "New Personal Statement Submission",
+      from_name: "Clover Essay Submission",
+      name: formData.get("name"),
+      email: formData.get("email"),
+      package: "Personal Statement",
+      prompt: promptLabel,
+      word_count: wordCount,
+      doc_url: docUrl || "(Google Doc auto-creation not configured)",
+      essay: essayContent
+    };
+
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify(w3Payload)
+      });
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || result.success === false) {
+        throw new Error(result.message || "Submit failed");
+      }
+
+      essayForm.reset();
+      updateEssayWordCount();
+
+      const successMsg = docUrl
+        ? `Thanks! Your essay was submitted. <a href="${docUrl}" target="_blank" rel="noopener">View it as a Google Doc</a>. We'll be in touch within 48 hours.`
+        : "Thanks! Your essay was submitted successfully. We'll be in touch within 48 hours.";
+      setEssayStatus(successMsg, "success", !!docUrl);
+    } catch (error) {
+      setEssayStatus(
+        "Something went wrong submitting your essay. Please try again or email cloverconsult26@gmail.com directly.",
+        "error"
+      );
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit Essay";
       }
     }
   });

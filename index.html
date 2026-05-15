@@ -107,26 +107,115 @@
           <div class="card section-card">
             <h2>Our Services &amp; Pricing</h2>
 
-            <article class="service-block">
-              <h3>Essay Review</h3>
-              <p>Honest, specific feedback to sharpen your voice and strengthen your story.</p>
-              <p><strong>Common App:</strong> $80</p>
-              <p><strong>Supplementals:</strong> 12&cent; / word</p>
-              <p><strong>Turnaround:</strong> 48 hours</p>
-            </article>
+            <div class="tabs" role="tablist" aria-label="Services">
+              <button type="button" role="tab" class="tab active" data-tab="essay" aria-selected="true">Essay Editing</button>
+              <button type="button" role="tab" class="tab" data-tab="consulting" aria-selected="false">Consulting</button>
+              <button type="button" role="tab" class="tab" data-tab="tutoring" aria-selected="false">Tutoring</button>
+            </div>
 
-            <article class="service-block">
-              <h3>Target School Selection</h3>
-              <p>Personalized reach/target/safety list aligned with your profile and preferences.</p>
-              <p><strong>College List Strategy:</strong> $25 flat rate</p>
-            </article>
+            <div class="tab-panels">
+              <div role="tabpanel" class="tab-panel active" data-panel="essay">
+                <p class="panel-intro">Honest, specific feedback to sharpen your voice and strengthen your story. 48-hour turnaround.</p>
+                <div class="package-grid">
+                  <button type="button" class="package-card" data-package="personal-statement">
+                    <h3>Personal Statement</h3>
+                    <p>Common App essay (650 words)</p>
+                    <p class="price">$80</p>
+                    <p class="package-cta">Submit your essay &rarr;</p>
+                  </button>
+                  <button type="button" class="package-card" data-package="supplemental">
+                    <h3>Supplemental Essays</h3>
+                    <p>School-specific prompts</p>
+                    <p class="price">12&cent; / word</p>
+                    <p class="package-cta">Inquire &rarr;</p>
+                  </button>
+                  <button type="button" class="package-card" data-package="full-review">
+                    <h3>Full Application Review</h3>
+                    <p>End-to-end essay polish</p>
+                    <p class="price">$125 / school</p>
+                    <p class="package-cta">Inquire &rarr;</p>
+                  </button>
+                </div>
 
-            <article class="service-block">
-              <h3>Full Application Review</h3>
-              <p>End-to-end polish for activities, honors, essays, and application positioning.</p>
-              <p><strong>Application Review:</strong> $125 per school</p>
-              <p><strong>UC Application:</strong> Counts as one school</p>
-            </article>
+                <div id="essay-form-wrap" class="package-form" hidden>
+                  <h3 id="essay-form-title">Submit your Personal Statement</h3>
+                  <p>We&apos;ll review it within 48 hours and send back tracked feedback.</p>
+                  <form id="essay-form" novalidate>
+                    <input type="hidden" name="access_key" value="4badcf59-1f01-4343-b602-374a181ee01b" />
+                    <input type="hidden" name="subject" value="New Personal Statement Submission" />
+                    <input type="hidden" name="from_name" value="Clover Essay Submission" />
+                    <input type="checkbox" name="essay_botcheck" style="display:none" tabindex="-1" autocomplete="off" />
+
+                    <label for="essay-name">Name</label>
+                    <input id="essay-name" name="name" type="text" placeholder="Your full name" required />
+
+                    <label for="essay-email">Email</label>
+                    <input id="essay-email" name="email" type="email" placeholder="you@example.com" required />
+
+                    <label for="essay-prompt">Common App Prompt</label>
+                    <select id="essay-prompt" name="prompt" required>
+                      <option value="">Select a prompt...</option>
+                      <option value="1">1. Background, identity, interest, or talent that is so meaningful your application would be incomplete without it.</option>
+                      <option value="2">2. Recount a time you faced a challenge, setback, or failure. How did it affect you and what did you learn?</option>
+                      <option value="3">3. Reflect on a time you questioned or challenged a belief or idea. What prompted it? What was the outcome?</option>
+                      <option value="4">4. Reflect on something someone has done for you that made you happy or thankful in a surprising way.</option>
+                      <option value="5">5. Discuss an accomplishment, event, or realization that sparked personal growth and new understanding.</option>
+                      <option value="6">6. Describe a topic, idea, or concept you find so engaging it makes you lose all track of time.</option>
+                      <option value="7">7. Share an essay on any topic of your choice (free choice).</option>
+                    </select>
+
+                    <label for="essay-text">
+                      Your Essay
+                      <span class="word-counter" id="essay-word-counter" aria-live="polite">0 / 650 words</span>
+                    </label>
+                    <textarea id="essay-text" name="essay" rows="14" placeholder="Paste your draft here..." required></textarea>
+
+                    <div class="essay-actions">
+                      <button type="button" class="btn btn-ghost" id="essay-cancel">Cancel</button>
+                      <button type="submit" class="btn btn-light">Submit Essay</button>
+                    </div>
+                    <p id="essay-status" class="form-status" aria-live="polite"></p>
+                  </form>
+                </div>
+              </div>
+
+              <div role="tabpanel" class="tab-panel" data-panel="consulting" hidden>
+                <p class="panel-intro">Strategy and structure for your application from start to finish.</p>
+                <div class="package-grid">
+                  <div class="package-card static">
+                    <h3>Target School Selection</h3>
+                    <p>Personalized reach / target / safety list aligned with your profile.</p>
+                    <p class="price">$25 flat rate</p>
+                  </div>
+                  <div class="package-card static">
+                    <h3>Free Consultation</h3>
+                    <p>Talk through your goals and where to begin.</p>
+                    <p class="price">Free</p>
+                  </div>
+                  <div class="package-card static">
+                    <h3>Full Application Review</h3>
+                    <p>End-to-end polish for activities, honors, essays, and positioning.</p>
+                    <p class="price">$125 per school</p>
+                  </div>
+                </div>
+              </div>
+
+              <div role="tabpanel" class="tab-panel" data-panel="tutoring" hidden>
+                <p class="panel-intro">One-on-one academic and standardized test tutoring.</p>
+                <div class="package-grid">
+                  <div class="package-card static">
+                    <h3>SAT / ACT Prep</h3>
+                    <p>Personalized test strategy and practice.</p>
+                    <p class="price">Contact for pricing</p>
+                  </div>
+                  <div class="package-card static">
+                    <h3>Subject Tutoring</h3>
+                    <p>Math, science, English, and AP support.</p>
+                    <p class="price">Contact for pricing</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

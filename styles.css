@@ -269,6 +269,158 @@ h2 {
   font-size: 1.35rem;
 }
 
+.tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin: 1.2rem 0 1.4rem;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  padding: 0.75rem 1.1rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 120ms ease, border-color 120ms ease;
+}
+
+.tab:hover {
+  color: var(--text);
+}
+
+.tab.active {
+  color: var(--text);
+  border-bottom-color: #6f89ff;
+}
+
+.tab-panel[hidden] {
+  display: none;
+}
+
+.panel-intro {
+  margin: 0 0 1.2rem;
+  color: var(--muted);
+}
+
+.package-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.package-card {
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text);
+  padding: 1.2rem 1.1rem;
+  font: inherit;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+  display: block;
+  width: 100%;
+}
+
+.package-card:hover {
+  transform: translateY(-2px);
+  border-color: #6f89ff;
+  background: rgba(111, 137, 255, 0.06);
+}
+
+.package-card.static {
+  cursor: default;
+}
+
+.package-card.static:hover {
+  transform: none;
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.package-card h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.1rem;
+}
+
+.package-card p {
+  margin: 0.25rem 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.package-card .price {
+  color: var(--text);
+  font-weight: 600;
+  margin-top: 0.6rem;
+}
+
+.package-card .package-cta {
+  color: #6f89ff;
+  font-weight: 600;
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+}
+
+.package-form {
+  margin-top: 1.6rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+}
+
+.package-form h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.3rem;
+}
+
+#essay-form {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.6rem;
+}
+
+#essay-text {
+  min-height: 280px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.word-counter {
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+}
+
+.word-counter.over {
+  color: #ffb3b3;
+}
+
+.essay-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+  align-items: center;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
 .contact-form {
   margin-top: 1.3rem;
   display: grid;
@@ -342,12 +494,17 @@ textarea:focus {
   }
 
   .stats-grid,
-  .acceptance-list {
+  .acceptance-list,
+  .package-grid {
     grid-template-columns: 1fr;
   }
 
   .logo-item {
     width: 78px;
     height: 78px;
+  }
+
+  .tabs {
+    overflow-x: auto;
   }
 }
