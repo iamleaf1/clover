@@ -207,6 +207,11 @@ body.auth-pending #user-badge {
   visibility: hidden;
 }
 
+.btn-google[hidden],
+.user-badge[hidden] {
+  display: none;
+}
+
 .hero {
   padding: 1.8rem 0 0;
 }
