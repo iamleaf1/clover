@@ -463,30 +463,6 @@ h2 {
   font-size: 0.95rem;
 }
 
-.package-card .price {
-  color: var(--text);
-  font-weight: 600;
-  margin-top: 0.6rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.price-main {
-  color: var(--text);
-  font-weight: 700;
-  font-size: 1rem;
-}
-
-.package-card.is-free-tier .price-main {
-  color: #8ef2a1;
-}
-
-.price-sub {
-  color: var(--muted);
-  font-weight: 500;
-  font-size: 0.85rem;
-}
 
 .package-card .package-cta {
   color: #6f89ff;
