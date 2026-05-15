@@ -1,8 +1,9 @@
 const words = [
-  "stand out.",
+  "find your voice.",
   "tell your story.",
-  "get admitted.",
-  "do it right."
+  "feel confident.",
+  "navigate the journey.",
+  "get where you belong."
 ];
 
 const typingTarget = document.getElementById("typing-text");
