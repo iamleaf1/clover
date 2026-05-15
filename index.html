@@ -129,6 +129,12 @@
                     <p class="price">12&cent; / word</p>
                     <p class="package-cta">Inquire &rarr;</p>
                   </button>
+                  <button type="button" class="package-card" data-package="uc-essays">
+                    <h3>UC Essays</h3>
+                    <p>4 Personal Insight Questions (350 words each)</p>
+                    <p class="price">$80 / essay</p>
+                    <p class="package-cta">Submit your essays &rarr;</p>
+                  </button>
                   <button type="button" class="package-card" data-package="full-review">
                     <h3>Full Application Review</h3>
                     <p>End-to-end essay polish</p>
@@ -175,6 +181,113 @@
                       <button type="submit" class="btn btn-light">Submit Essay</button>
                     </div>
                     <p id="essay-status" class="form-status" aria-live="polite"></p>
+                  </form>
+                </div>
+
+                <div id="uc-form-wrap" class="package-form" hidden>
+                  <h3>Submit your UC Personal Insight Questions</h3>
+                  <p>Pick 4 of the 8 UC prompts (each must be unique). Each response is limited to 350 words. We&apos;ll review within 48 hours.</p>
+                  <form id="uc-form" novalidate>
+                    <input type="hidden" name="access_key" value="4badcf59-1f01-4343-b602-374a181ee01b" />
+                    <input type="hidden" name="subject" value="New UC PIQ Submission" />
+                    <input type="hidden" name="from_name" value="Clover Essay Submission" />
+                    <input type="checkbox" name="uc_botcheck" style="display:none" tabindex="-1" autocomplete="off" />
+
+                    <label for="uc-name">Name</label>
+                    <input id="uc-name" name="name" type="text" placeholder="Your full name" required />
+
+                    <label for="uc-email">Email</label>
+                    <input id="uc-email" name="email" type="email" placeholder="you@example.com" required />
+
+                    <fieldset class="uc-essay-block">
+                      <legend>Essay 1</legend>
+                      <label for="uc-prompt-1">UC Prompt</label>
+                      <select id="uc-prompt-1" name="prompt-1" class="uc-prompt-select" required>
+                        <option value="">Select a prompt...</option>
+                        <option value="1">PIQ 1: Describe an example of your leadership experience...</option>
+                        <option value="2">PIQ 2: Describe how you express your creative side...</option>
+                        <option value="3">PIQ 3: Your greatest talent or skill and how you developed it...</option>
+                        <option value="4">PIQ 4: A significant educational opportunity or barrier...</option>
+                        <option value="5">PIQ 5: The most significant challenge you have faced...</option>
+                        <option value="6">PIQ 6: An academic subject that inspires you...</option>
+                        <option value="7">PIQ 7: What you have done to make your school or community better...</option>
+                        <option value="8">PIQ 8: What makes you stand out as a strong UC candidate...</option>
+                      </select>
+                      <label for="uc-text-1">
+                        Your Essay
+                        <span class="word-counter" id="uc-counter-1" aria-live="polite">0 / 350 words</span>
+                      </label>
+                      <textarea id="uc-text-1" name="essay-1" rows="9" placeholder="Paste your response here..." required></textarea>
+                    </fieldset>
+
+                    <fieldset class="uc-essay-block">
+                      <legend>Essay 2</legend>
+                      <label for="uc-prompt-2">UC Prompt</label>
+                      <select id="uc-prompt-2" name="prompt-2" class="uc-prompt-select" required>
+                        <option value="">Select a prompt...</option>
+                        <option value="1">PIQ 1: Describe an example of your leadership experience...</option>
+                        <option value="2">PIQ 2: Describe how you express your creative side...</option>
+                        <option value="3">PIQ 3: Your greatest talent or skill and how you developed it...</option>
+                        <option value="4">PIQ 4: A significant educational opportunity or barrier...</option>
+                        <option value="5">PIQ 5: The most significant challenge you have faced...</option>
+                        <option value="6">PIQ 6: An academic subject that inspires you...</option>
+                        <option value="7">PIQ 7: What you have done to make your school or community better...</option>
+                        <option value="8">PIQ 8: What makes you stand out as a strong UC candidate...</option>
+                      </select>
+                      <label for="uc-text-2">
+                        Your Essay
+                        <span class="word-counter" id="uc-counter-2" aria-live="polite">0 / 350 words</span>
+                      </label>
+                      <textarea id="uc-text-2" name="essay-2" rows="9" placeholder="Paste your response here..." required></textarea>
+                    </fieldset>
+
+                    <fieldset class="uc-essay-block">
+                      <legend>Essay 3</legend>
+                      <label for="uc-prompt-3">UC Prompt</label>
+                      <select id="uc-prompt-3" name="prompt-3" class="uc-prompt-select" required>
+                        <option value="">Select a prompt...</option>
+                        <option value="1">PIQ 1: Describe an example of your leadership experience...</option>
+                        <option value="2">PIQ 2: Describe how you express your creative side...</option>
+                        <option value="3">PIQ 3: Your greatest talent or skill and how you developed it...</option>
+                        <option value="4">PIQ 4: A significant educational opportunity or barrier...</option>
+                        <option value="5">PIQ 5: The most significant challenge you have faced...</option>
+                        <option value="6">PIQ 6: An academic subject that inspires you...</option>
+                        <option value="7">PIQ 7: What you have done to make your school or community better...</option>
+                        <option value="8">PIQ 8: What makes you stand out as a strong UC candidate...</option>
+                      </select>
+                      <label for="uc-text-3">
+                        Your Essay
+                        <span class="word-counter" id="uc-counter-3" aria-live="polite">0 / 350 words</span>
+                      </label>
+                      <textarea id="uc-text-3" name="essay-3" rows="9" placeholder="Paste your response here..." required></textarea>
+                    </fieldset>
+
+                    <fieldset class="uc-essay-block">
+                      <legend>Essay 4</legend>
+                      <label for="uc-prompt-4">UC Prompt</label>
+                      <select id="uc-prompt-4" name="prompt-4" class="uc-prompt-select" required>
+                        <option value="">Select a prompt...</option>
+                        <option value="1">PIQ 1: Describe an example of your leadership experience...</option>
+                        <option value="2">PIQ 2: Describe how you express your creative side...</option>
+                        <option value="3">PIQ 3: Your greatest talent or skill and how you developed it...</option>
+                        <option value="4">PIQ 4: A significant educational opportunity or barrier...</option>
+                        <option value="5">PIQ 5: The most significant challenge you have faced...</option>
+                        <option value="6">PIQ 6: An academic subject that inspires you...</option>
+                        <option value="7">PIQ 7: What you have done to make your school or community better...</option>
+                        <option value="8">PIQ 8: What makes you stand out as a strong UC candidate...</option>
+                      </select>
+                      <label for="uc-text-4">
+                        Your Essay
+                        <span class="word-counter" id="uc-counter-4" aria-live="polite">0 / 350 words</span>
+                      </label>
+                      <textarea id="uc-text-4" name="essay-4" rows="9" placeholder="Paste your response here..." required></textarea>
+                    </fieldset>
+
+                    <div class="essay-actions">
+                      <button type="button" class="btn btn-ghost" id="uc-cancel">Cancel</button>
+                      <button type="submit" class="btn btn-light">Submit Essays</button>
+                    </div>
+                    <p id="uc-status" class="form-status" aria-live="polite"></p>
                   </form>
                 </div>
               </div>

@@ -310,7 +310,7 @@ h2 {
 
 .package-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
 }
 
@@ -419,6 +419,35 @@ h2 {
 .btn-ghost:hover {
   color: var(--text);
   border-color: var(--text);
+}
+
+.uc-essay-block {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem 1.1rem 1.1rem;
+  margin: 0.4rem 0 0;
+  display: grid;
+  gap: 0.55rem;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.uc-essay-block legend {
+  padding: 0 0.5rem;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.uc-essay-block textarea {
+  min-height: 200px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+#uc-form {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.6rem;
 }
 
 .contact-form {

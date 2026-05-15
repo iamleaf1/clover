@@ -355,15 +355,29 @@ const ESSAY_LIMIT = 650;
 
 const ESSAY_DOC_ENDPOINT = "https://script.google.com/macros/s/AKfycbydZuChid8Bt9ZO4efBAP2MC6UjpU1QjtrzCVduSnr56E3KtU6lheuirffjtlolOreeVg/exec";
 
+const ucFormWrap = document.getElementById("uc-form-wrap");
+
+function showPackageForm(targetWrap, focusId) {
+  [essayFormWrap, ucFormWrap].forEach((w) => {
+    if (w) w.hidden = w !== targetWrap;
+  });
+  if (targetWrap) {
+    targetWrap.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (focusId) {
+      const focusEl = document.getElementById(focusId);
+      if (focusEl) focusEl.focus();
+    }
+  }
+}
+
 const packageCards = document.querySelectorAll(".package-card[data-package]");
 packageCards.forEach((card) => {
   card.addEventListener("click", () => {
     const pkg = card.dataset.package;
     if (pkg === "personal-statement" && essayFormWrap) {
-      essayFormWrap.hidden = false;
-      essayFormWrap.scrollIntoView({ behavior: "smooth", block: "start" });
-      const nameInput = document.getElementById("essay-name");
-      if (nameInput) nameInput.focus();
+      showPackageForm(essayFormWrap, "essay-name");
+    } else if (pkg === "uc-essays" && ucFormWrap) {
+      showPackageForm(ucFormWrap, "uc-name");
     } else {
       const contactSection = document.getElementById("contact");
       if (contactSection) contactSection.scrollIntoView({ behavior: "smooth" });
@@ -504,6 +518,180 @@ if (essayForm) {
       if (submitButton) {
         submitButton.disabled = false;
         submitButton.textContent = "Submit Essay";
+      }
+    }
+  });
+}
+
+const ucForm = document.getElementById("uc-form");
+const ucCancel = document.getElementById("uc-cancel");
+const ucStatus = document.getElementById("uc-status");
+const UC_LIMIT = 350;
+const UC_ESSAY_COUNT = 4;
+
+function updateUcWordCount(index) {
+  const ta = document.getElementById(`uc-text-${index}`);
+  const ctr = document.getElementById(`uc-counter-${index}`);
+  if (!ta || !ctr) return;
+  const n = countWords(ta.value);
+  ctr.textContent = `${n} / ${UC_LIMIT} words`;
+  ctr.classList.toggle("over", n > UC_LIMIT);
+}
+
+function resetUcCounters() {
+  for (let i = 1; i <= UC_ESSAY_COUNT; i++) {
+    const ctr = document.getElementById(`uc-counter-${i}`);
+    if (ctr) {
+      ctr.textContent = `0 / ${UC_LIMIT} words`;
+      ctr.classList.remove("over");
+    }
+  }
+}
+
+for (let i = 1; i <= UC_ESSAY_COUNT; i++) {
+  const ta = document.getElementById(`uc-text-${i}`);
+  if (ta) {
+    ta.addEventListener("input", () => updateUcWordCount(i));
+    updateUcWordCount(i);
+  }
+}
+
+function setUcStatus(message, state = "", asHtml = false) {
+  if (!ucStatus) return;
+  if (asHtml) {
+    ucStatus.innerHTML = message;
+  } else {
+    ucStatus.textContent = message;
+  }
+  ucStatus.classList.remove("success", "error");
+  if (state) ucStatus.classList.add(state);
+}
+
+if (ucCancel && ucForm) {
+  ucCancel.addEventListener("click", () => {
+    ucForm.reset();
+    resetUcCounters();
+    setUcStatus("");
+    if (ucFormWrap) ucFormWrap.hidden = true;
+  });
+}
+
+if (ucForm) {
+  ucForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const submitButton = ucForm.querySelector('button[type="submit"]');
+    const formData = new FormData(ucForm);
+
+    const essays = [];
+    const seenPrompts = new Set();
+    for (let i = 1; i <= UC_ESSAY_COUNT; i++) {
+      const promptValue = (formData.get(`prompt-${i}`) || "").toString();
+      const text = (formData.get(`essay-${i}`) || "").toString();
+      const wordCount = countWords(text);
+      const promptLabel =
+        ucForm.querySelector(`#uc-prompt-${i} option[value="${promptValue}"]`)?.textContent ||
+        promptValue;
+
+      if (!promptValue) {
+        setUcStatus(`Please choose a UC prompt for Essay ${i}.`, "error");
+        return;
+      }
+      if (seenPrompts.has(promptValue)) {
+        setUcStatus(`Each essay must use a different UC prompt. Essay ${i} duplicates an earlier one.`, "error");
+        return;
+      }
+      seenPrompts.add(promptValue);
+
+      if (wordCount === 0) {
+        setUcStatus(`Please write your response for Essay ${i}.`, "error");
+        return;
+      }
+      if (wordCount > UC_LIMIT) {
+        setUcStatus(`Essay ${i} is ${wordCount} words. UC limit is ${UC_LIMIT} words.`, "error");
+        return;
+      }
+
+      essays.push({ prompt: promptLabel, text, wordCount });
+    }
+
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = "Submitting...";
+    }
+    setUcStatus("Submitting your essays...");
+
+    const concatenated = essays
+      .map((e, i) => `=== Essay ${i + 1} ===\nPrompt: ${e.prompt}\nWord Count: ${e.wordCount}\n\n${e.text}\n`)
+      .join("\n");
+    const totalWords = essays.reduce((sum, e) => sum + e.wordCount, 0);
+
+    let docUrl = "";
+    if (ESSAY_DOC_ENDPOINT) {
+      try {
+        const docRes = await fetch(ESSAY_DOC_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({
+            name: formData.get("name"),
+            email: formData.get("email"),
+            package: "UC Essays",
+            essays,
+            prompt: "UC PIQs (4 essays)",
+            wordCount: totalWords,
+            essay: concatenated
+          })
+        });
+        const docData = await docRes.json().catch(() => ({}));
+        if (docData && docData.url) {
+          docUrl = docData.url;
+        }
+      } catch (e) {
+      }
+    }
+
+    const w3Payload = {
+      access_key: formData.get("access_key"),
+      subject: "New UC PIQ Submission",
+      from_name: "Clover Essay Submission",
+      name: formData.get("name"),
+      email: formData.get("email"),
+      package: "UC Essays",
+      total_word_count: totalWords,
+      doc_url: docUrl || "(Google Doc auto-creation not configured)",
+      essays: concatenated
+    };
+
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify(w3Payload)
+      });
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || result.success === false) {
+        throw new Error(result.message || "Submit failed");
+      }
+
+      ucForm.reset();
+      resetUcCounters();
+
+      const successMsg = docUrl
+        ? `Thanks! Your UC essays were submitted. <a href="${docUrl}" target="_blank" rel="noopener">View as a Google Doc</a>. We'll be in touch within 48 hours.`
+        : "Thanks! Your UC essays were submitted successfully. We'll be in touch within 48 hours.";
+      setUcStatus(successMsg, "success", !!docUrl);
+    } catch (error) {
+      setUcStatus(
+        "Something went wrong submitting your essays. Please try again or email cloverconsult26@gmail.com directly.",
+        "error"
+      );
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Submit Essays";
       }
     }
   });
