@@ -445,6 +445,63 @@ async function getCurrentIdToken() {
   return null;
 }
 
+const PRICING_TIERS = {
+  "personal-statement": {
+    free: { main: "First essay free", sub: "then $65 per essay" },
+    paid: { main: "$65", sub: "per essay" }
+  },
+  "uc-essays": {
+    free: { main: "First essay free", sub: "then $180 for all 4" },
+    paid: { main: "$180", sub: "all 4 essays" }
+  }
+};
+
+function applyPricingForSubmissionCount(count) {
+  const tier = count > 0 ? "paid" : "free";
+  Object.keys(PRICING_TIERS).forEach((pkg) => {
+    const card = document.querySelector(`.package-card[data-package="${pkg}"]`);
+    if (!card) return;
+    const priceEl = card.querySelector('[data-pricing]');
+    if (!priceEl) return;
+    const labels = PRICING_TIERS[pkg][tier];
+    priceEl.innerHTML =
+      `<span class="price-main">${labels.main}</span>` +
+      `<span class="price-sub">${labels.sub}</span>`;
+    card.classList.toggle("is-free-tier", tier === "free");
+  });
+}
+
+applyPricingForSubmissionCount(0);
+
+async function refreshUserStatus() {
+  const idToken = await getCurrentIdToken();
+  if (!idToken || !ESSAY_DOC_ENDPOINT) return;
+  try {
+    const res = await fetch(ESSAY_DOC_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ idToken, action: "status" })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (typeof data.submissionCount === "number") {
+      applyPricingForSubmissionCount(data.submissionCount);
+    }
+  } catch (e) {
+  }
+}
+
+window.addEventListener("clover-auth-changed", (event) => {
+  if (event.detail) {
+    refreshUserStatus();
+  } else {
+    applyPricingForSubmissionCount(0);
+  }
+});
+
+if (window.cloverAuth && window.cloverAuth.user) {
+  refreshUserStatus();
+}
+
 function setEssayStatus(message, state = "", asHtml = false) {
   if (!essayStatus) return;
   if (asHtml) {
@@ -509,6 +566,9 @@ if (essayForm) {
         const docData = await docRes.json().catch(() => ({}));
         if (docData && docData.url) {
           docUrl = docData.url;
+        }
+        if (typeof docData.submissionCount === "number") {
+          applyPricingForSubmissionCount(docData.submissionCount);
         }
       } catch (e) {
       }
@@ -690,6 +750,9 @@ if (ucForm) {
         const docData = await docRes.json().catch(() => ({}));
         if (docData && docData.url) {
           docUrl = docData.url;
+        }
+        if (typeof docData.submissionCount === "number") {
+          applyPricingForSubmissionCount(docData.submissionCount);
         }
       } catch (e) {
       }
