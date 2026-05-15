@@ -471,6 +471,63 @@ h2 {
   font-size: 0.9rem;
 }
 
+.package-grid-single {
+  grid-template-columns: minmax(0, 480px);
+  justify-content: center;
+}
+
+.consulting-cta {
+  text-align: center;
+}
+
+.consulting-cta h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.package-includes {
+  list-style: none;
+  margin: 0.4rem 0 0.8rem;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.package-includes li {
+  position: relative;
+}
+
+.consulting-cta .package-cta {
+  font-size: 0.95rem;
+}
+
+.package-instagram {
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #d7dcea;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.instagram-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #f58529 0%, #dd2a7b 50%, #8134af 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 12px;
+}
+
 .package-form {
   margin-top: 1.6rem;
   padding-top: 1.4rem;

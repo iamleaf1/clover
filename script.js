@@ -393,6 +393,9 @@ packageCards.forEach((card) => {
       requireAuthThen(() => showPackageForm(essayFormWrap, "essay-prompt"));
     } else if (pkg === "uc-essays" && ucFormWrap) {
       requireAuthThen(() => showPackageForm(ucFormWrap, "uc-prompt-1"));
+    } else if (pkg === "free-consultation") {
+      const contactSection = document.getElementById("contact");
+      if (contactSection) contactSection.scrollIntoView({ behavior: "smooth" });
     } else {
       const contactSection = document.getElementById("contact");
       if (contactSection) contactSection.scrollIntoView({ behavior: "smooth" });
